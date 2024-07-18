@@ -66,11 +66,11 @@ export class RingBuffer {
     let spaceToEnd = this.capacity - this.end;
     if (chunk.length <= spaceToEnd) {
       this.buffer.set(chunk, this.end);
-      this.end += chunk.length;
+      this.end = (this.end + chunk.length) % this.capacity;
     } else {
       this.buffer.set(chunk.subarray(0, spaceToEnd), this.end);
-      this.buffer.set(chunk.subarray(spaceToEnd), 0);
-      this.end = chunk.length - spaceToEnd;
+      this.buffer.copyWithin(this.end, 0, chunk.length - spaceToEnd);
+      this.end = (this.end + chunk.length - spaceToEnd) % this.capacity;
     }
 
     this._length += chunk.length;
@@ -87,12 +87,13 @@ export class RingBuffer {
       throw new Error('Requested size is larger than buffer length');
     }
 
-    let result = new Uint8Array(size);
+    let result: Uint8Array;
 
     if (this.start < this.end) {
-      result.set(this.buffer.subarray(this.start, this.start + size), 0);
+      result = new Uint8Array(this.buffer.buffer, this.start, size);
     } else {
       let firstPart = Math.min(size, this.capacity - this.start);
+      result = new Uint8Array(size);
       result.set(this.buffer.subarray(this.start, this.start + firstPart), 0);
       result.set(this.buffer.subarray(0, size - firstPart), firstPart);
     }
