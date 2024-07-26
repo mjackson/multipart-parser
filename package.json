@@ -4,6 +4,7 @@
   "description": "A multipart parser for fetch streams",
   "author": "Michael Jackson <mjijackson@gmail.com>",
   "license": "MIT",
+  "repository": "github:mjackson/fetch-multipart-parser",
   "files": [
     "dist",
     "LICENSE",
