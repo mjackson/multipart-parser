@@ -23,36 +23,32 @@ export function indexOf(
   needle: Uint8Array,
   skipTable = computeSkipTable(needle),
 ): number {
-  let headLength = head.length;
-  let totalLength = headLength + tail.length;
-  let i = needle.length - 1;
+  let totalLength = head.length + tail.length;
 
-  while (i < totalLength) {
-    let j = needle.length - 1;
-    let k = i;
 
-    while (j >= 0 && (k < headLength ? head[k] : tail[k - headLength]) === needle[j]) {
-      j--;
-      k--;
+  for (let i = 0; i + needle.length <= totalLength; i += skipTable[(i + needle.length < head.length ? head[i + needle.length] : tail[i + needle.length - head.length])]) {
+    let p = 0;
+
+    while (p !== needle.length && needle[p] === (i + p < head.length ? head[i + p] : tail[i + p - head.length])) {
+      ++p;
     }
 
-    if (j === -1) {
-      return k + 1;
+    if (p === needle.length) {
+      return i;
     }
-
-    i += skipTable[i < headLength ? head[i] : tail[i - headLength]];
   }
 
-  return -1; // Not found
+  return -1;
 }
 
 export function computeSkipTable(needle: Uint8Array): Uint8Array {
-  let table = new Uint8Array(256).fill(needle.length);
-  let lastIndex = needle.length - 1;
+  let table = new Uint8Array(256).fill(needle.length + 1);
 
-  for (let i = 0; i < lastIndex; ++i) {
-    table[needle[i]] = lastIndex - i;
+  for (let i = 0; i < needle.length; ++i) {
+    table[needle[i]] = needle.length - i;
   }
+
+  console.log(table);
 
   return table;
 }
