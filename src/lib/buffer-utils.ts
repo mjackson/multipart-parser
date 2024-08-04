@@ -37,7 +37,7 @@ export function indexOf(
     }
 
     if (i + needle.length === totalLength) {
-      break;
+      return -1;
     }
   }
 
