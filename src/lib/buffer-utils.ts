@@ -25,7 +25,6 @@ export function indexOf(
 ): number {
   let totalLength = head.length + tail.length;
 
-
   for (let i = 0; i + needle.length <= totalLength; i += skipTable[(i + needle.length < head.length ? head[i + needle.length] : tail[i + needle.length - head.length])]) {
     let p = 0;
 
@@ -35,6 +34,10 @@ export function indexOf(
 
     if (p === needle.length) {
       return i;
+    }
+
+    if (i + needle.length === totalLength) {
+      break;
     }
   }
 
@@ -47,8 +50,6 @@ export function computeSkipTable(needle: Uint8Array): Uint8Array {
   for (let i = 0; i < needle.length; ++i) {
     table[needle[i]] = needle.length - i;
   }
-
-  console.log(table);
 
   return table;
 }
